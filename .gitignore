@@ -1,0 +1,4 @@
+./start.sh
+test.rest
+
+node_modules
