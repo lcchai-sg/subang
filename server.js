@@ -2,9 +2,6 @@ const express = require('express');
 const morgan = require('morgan');
 
 const connectDB = require('./api/config/db');
-const vendorRoutes = require('./api/routes/vendors');
-const productRoutes = require('./api/routes/products');
-const orderRoutes = require('./api/routes/orders');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,9 +23,11 @@ app.use((req, res, next) => {
 });
 
 // routes
-app.use('/vendors', vendorRoutes);
-app.use('/products', productRoutes);
-app.use('/orders', orderRoutes);
+app.use('/auth', require('./api/routes/auth'))
+app.use('/users', require('./api/routes/users'));
+app.use('/vendors', require('./api/routes/vendors'));
+app.use('/products', require('./api/routes/products'));
+app.use('/orders', require('./api/routes/orders'));
 
 // no routes to handle request
 app.use((req, res, next) => {

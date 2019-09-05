@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const { check, validationResult } = require('express-validator');
 
+const auth = require('../auth/auth');
 const Vendor = require('../models/vendors');
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
   try {
     const result = await Vendor.find();
     res.status(200).json({
@@ -19,7 +21,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', async (req, res) => {
   try {
     const result = await Vendor.find({ _id: req.params.id });
     if (result.length > 0) {
@@ -46,9 +48,22 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', [auth, [
+  check('defaultName', 'Default Name is required').not().isEmpty()
+]], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      errors: errors.array()
+    });
+  }
+
   try {
     const { defaultName, defaultInfo, altName, altInfo, address, city, state, postal, country, email, website, phone } = req.body;
+
+    if (!altName) { altName = defaultName }
+    if (defaultIndo && !altInfo) { altInfo = defaultInfo }
+    if (!country) { country = process.env.Country }
 
     const vendor = new Vendor({
       defaultName,
@@ -79,16 +94,23 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', [auth, [
+  check('defaultName', 'Default Name is required').not().isEmpty()
+]], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      errors: errors.array()
+    });
+  }
+
   try {
     const id = req.params.id;
-    const updateOps = {};
-    const obj = req.body;
-    for (let fieldName of Object.keys(obj)) {
-      updateOps[fieldName] = obj[fieldName];
-    }
-    console.log(id, updateOps);
-    const result = await Vendor.update({ _id: id }, { $set: updateOps });
+    if (!altName) { altName = defaultName }
+    if (defaultIndo && !altInfo) { altInfo = defaultInfo }
+    if (!country) { country = process.env.Country }
+
+    const result = await Vendor.findOneAndUpdate({ _id: id }, req.body);
     res.status(200).json({
       msg: 'Vendor Updated',
       result,
@@ -102,7 +124,7 @@ router.patch('/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     let vendor = await Vendor.find({ _id: req.params.id });
     if (vendor.length <= 0) {
@@ -116,6 +138,7 @@ router.delete('/:id', async (req, res, next) => {
       // being used
       // archive vendor data to status 9
       vendor.status = 9;
+      await vendor.save()
       return res.status(201).json({
         msg: 'Vendor Archived'
       });
