@@ -59,10 +59,10 @@ router.post('/', [auth, [
   }
 
   try {
-    const { defaultName, defaultInfo, altName, altInfo, address, city, state, postal, country, email, website, phone } = req.body;
+    let { defaultName, defaultInfo, altName, altInfo, address, city, state, postal, country, email, website, phone } = req.body;
 
     if (!altName) { altName = defaultName }
-    if (defaultIndo && !altInfo) { altInfo = defaultInfo }
+    if (defaultInfo && !altInfo) { altInfo = defaultInfo }
     if (!country) { country = process.env.Country }
 
     const vendor = new Vendor({
@@ -105,15 +105,9 @@ router.patch('/:id', [auth, [
   }
 
   try {
-    const id = req.params.id;
-    if (!altName) { altName = defaultName }
-    if (defaultIndo && !altInfo) { altInfo = defaultInfo }
-    if (!country) { country = process.env.Country }
-
-    const result = await Vendor.findOneAndUpdate({ _id: id }, req.body);
+    await Vendor.findOneAndUpdate({ _id: req.params.id }, req.body);
     res.status(200).json({
-      msg: 'Vendor Updated',
-      result,
+      msg: 'Vendor Updated'
     })
   } catch (err) {
     console.error('vendor create error: ', err);

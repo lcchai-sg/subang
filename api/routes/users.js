@@ -73,4 +73,20 @@ router.post('/', [
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const result = await User.find();
+    res.status(200).json({
+      count: result.length,
+      result,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({
+      msg: 'Server Error',
+      err,
+    })
+  }
+});
+
 module.exports = router;

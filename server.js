@@ -23,10 +23,10 @@ app.use((req, res, next) => {
 });
 
 // routes
-app.use('/auth', require('./api/routes/auth'))
-app.use('/users', require('./api/routes/users'));
-app.use('/vendors', require('./api/routes/vendors'));
-app.use('/products', require('./api/routes/products'));
+app.use('/api/auth', require('./api/routes/auth'))
+app.use('/api/users', require('./api/routes/users'));
+app.use('/api/vendors', require('./api/routes/vendors'));
+app.use('/api/products', require('./api/routes/products'));
 app.use('/orders', require('./api/routes/orders'));
 
 // no routes to handle request
