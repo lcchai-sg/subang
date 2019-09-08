@@ -8,17 +8,18 @@ const productSchema = mongoose.Schema({
   package: { type: String, required: true },
   vendor: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "vendor",
-    required: true,
+    ref: 'vendor',
+    required: true
   },
   price: { type: Number, required: true },
   resellerPrice: Number,
   images: [String],
-  post: [{ type: mongoose.Schema.Types.ObjectId, ref: "post", }],
-  likes: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'user', } }],
-  dislikes: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'user', } }],
-  status: { type: Number, default: 1, },
-  createdOn: { type: Date, default: Date.now, },
-})
+  post: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
+  likes: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' } }],
+  dislikes: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' } }],
+  status: { type: Number, default: 1 },
+  // 1-new, 2-used, 9-archived
+  createdOn: { type: Date, default: Date.now }
+});
 
 module.exports = Product = mongoose.model('product', productSchema);
